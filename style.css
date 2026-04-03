@@ -1,0 +1,550 @@
+/* style.css */
+
+/* --- ZÁKLADNÝ SVETLÝ REŽIM --- */
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.dashboard-header {
+    margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    position: relative; 
+}
+
+/* Karta pre KPI */
+.kpi-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    text-align: center;
+    height: 100%;
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s, border-color 0.3s;
+}
+
+.kpi-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+}
+
+.kpi-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+
+.kpi-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+/* Kontajnery pre grafy a tabuľky */
+.chart-container, .table-container, .upload-section {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.chart-container { margin-bottom: 1.5rem; height: 400px; display: flex; flex-direction: column; }
+.table-container { padding: 20px; }
+.upload-section { padding: 20px; max-width: 500px; margin: 0 auto 1.5rem auto; }
+
+.chart-container h6 {
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.chart-wrapper {
+    flex-grow: 1;
+    position: relative;
+}
+
+/* Utility triedy */
+.progress-container { margin-top: 5px; height: 8px; }
+.days-left { font-size: 0.8rem; color: #6c757d; font-weight: 500; }
+.table-header-custom { font-size: 0.9rem; }
+.table-body-custom { font-size: 0.95rem; }
+.min-w-200 { min-width: 200px; }
+.text-micro { font-size: 0.7rem; }
+.text-small { font-size: 0.8rem; }
+
+/* CSS pre klikateľné hlavičky tabuľky */
+th.sortable { cursor: pointer; position: relative; padding-right: 1.5rem !important; }
+th.sortable:hover { background-color: rgba(0,0,0,0.05); }
+.sort-icon { position: absolute; right: 5px; font-size: 0.8rem; color: #adb5bd; }
+.sort-active { font-weight: bold; }
+
+.control-panel-pro { max-width: 800px; margin-left: auto; margin-right: auto; }
+
+
+/* --- EXPLICITNÝ TMAVÝ REŽIM (Prepisovanie farieb) --- */
+/* Keď html dostane atribút data-bs-theme="dark", tieto pravidlá zvíťazia */
+
+[data-bs-theme="dark"] body {
+    background-color: #212529 !important; /* Tmavosivé pozadie celej stránky */
+    color: #f8f9fa !important;
+}
+
+[data-bs-theme="dark"] .kpi-card,
+[data-bs-theme="dark"] .chart-container,
+[data-bs-theme="dark"] .table-container,
+[data-bs-theme="dark"] .upload-section {
+    background: #2b3035 !important; /* Tmavé karty (o niečo bledšie ako body) */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+    border: 1px solid #495057;
+}
+
+[data-bs-theme="dark"] .dashboard-header h2 { color: #f8f9fa !important; }
+[data-bs-theme="dark"] .chart-container h6 { color: #dee2e6 !important; }
+[data-bs-theme="dark"] .kpi-value.text-dark-emphasis { color: #f8f9fa !important; }
+[data-bs-theme="dark"] .text-dark { color: #f8f9fa !important; }
+
+/* Prispôsobenie tabuľky pre tmavý režim */
+[data-bs-theme="dark"] .table { color: #dee2e6; }
+[data-bs-theme="dark"] th.sortable:hover { background-color: rgba(255,255,255,0.05); }
+[data-bs-theme="dark"] .sort-active { color: #fff; }
+
+
+/* ==========================================================================
+   FIREFISH Brand & UNIFIED ACTION PANEL CSS
+   ========================================================================== */
+
+/* Definícia premenných na začiatku */
+:root {
+    --ff-primary: #ff4747; /* Firefish Red/Orange */
+    --ff-warning: #ffc107;
+    --ff-success: #198754;
+    --ff-dark: #212529;
+    
+    /* Definícia jednotných veľkostí pre ovládacie prvky */
+    --action-btn-size: 28px; 
+    --action-btn-radius: 6px;
+    --action-icon-size: 1rem;
+}
+
+/* --- JEDNOTNÉ OVLÁDACIE TLAČIDLÁ (Kôš, atď) --- */
+.action-btn {
+    width: var(--action-btn-size);
+    height: var(--action-btn-size);
+    padding: 0 !important;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--action-btn-radius);
+    font-size: var(--action-icon-size);
+    line-height: 1;
+    transition: all 0.15s ease-in-out;
+}
+
+/* --- NOVÝ PREPÍNAČ TÉM (Jednotný dizajnérsky box) --- */
+.theme-btn-group {
+    display: flex;
+    align-items: center;
+    height: var(--action-btn-size);
+    border: 1px solid var(--bs-border-color-translucent);
+    border-radius: var(--action-btn-radius);
+    background-color: var(--bs-body-bg);
+    padding: 2px;
+    gap: 2px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+    transition: background-color 0.15s ease-in-out;
+}
+
+.theme-icon {
+    font-size: 0.9rem;
+    cursor: pointer;
+    color: var(--bs-secondary-color);
+    width: calc(var(--action-btn-size) - 6px);
+    height: calc(var(--action-btn-size) - 6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: calc(var(--action-btn-radius) - 2px);
+    transition: all 0.1s ease-in-out;
+}
+
+/* SVETLÝ REŽIM: aktívne Slnko */
+[data-bs-theme="light"] #themeSwitchSun {
+    color: white;
+    background-color: var(--ff-warning); 
+}
+
+/* TMAVÝ REŽIM: aktívny Mesiac */
+[data-bs-theme="dark"] #themeSwitchMoon {
+    color: #fff;
+    background-color: #6f42c1;
+}
+
+/* Hover efekt pre neaktívne ikonky */
+.theme-icon:hover:not(.active) {
+    background-color: var(--bs-secondary-bg);
+}
+
+
+/* Oprava formulárových prvkov pre tmavý režim */
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+    background-color: #2b3035 !important;
+    border-color: #495057 !important;
+    color: #dee2e6 !important;
+}
+
+[data-bs-theme="dark"] .form-control::file-selector-button {
+    background-color: #343a40 !important;
+    color: #dee2e6 !important;
+    border-color: #495057 !important;
+}
+
+/* Oprava hlavičky tabuľky a čiar */
+[data-bs-theme="dark"] .table-header-custom th {
+    color: #adb5bd !important;
+    border-bottom-color: #495057 !important;
+}
+
+[data-bs-theme="dark"] .table > :not(caption) > * > * {
+    border-bottom-color: #343a40 !important;
+    color: #dee2e6; /* Zabezpečí, že texty v tabuľke budú svetlé */
+}
+
+/* Špecifické nastavenie pre Stress Test Slider */
+.stress-slider {
+    max-width: 200px;
+}
+
+/* --- PREMIUM FINTECH DIZAJN --- */
+
+/* Prémiový panel pre ovládanie */
+.control-panel-pro {
+    background: var(--bs-body-bg);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--bs-border-color-translucent);
+    padding: 24px;
+    margin-bottom: 24px;
+    transition: all 0.3s ease;
+}
+
+[data-bs-theme="dark"] .control-panel-pro {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    background: #1e1e24; /* Jemne odlíšené pozadie v dark móde */
+}
+
+/* Krajší AI Asistent */
+.ai-insight-card {
+    border-radius: 12px;
+    border-left: 5px solid #198754;
+    background: rgba(25, 135, 84, 0.05);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+.ai-insight-card.danger { border-left-color: #dc3545; background: rgba(220, 53, 69, 0.05); }
+.ai-insight-card.warning { border-left-color: #ffc107; background: rgba(255, 193, 7, 0.05); }
+
+/* Moderný odznak pre BTC Kolaterál */
+.btc-badge-premium {
+    background: linear-gradient(135deg, #f7931a 0%, #d87b0f 100%);
+    color: white !important;
+    border: none !important;
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(247, 147, 26, 0.3);
+}
+
+/* Vyladený Stress Slider */
+.stress-slider {
+    height: 6px;
+    border-radius: 8px;
+    background: #e9ecef;
+    outline: none;
+    max-width: 250px;
+}
+.stress-slider::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    background: #0d6efd;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(13, 110, 253, 0.4);
+    transition: transform 0.1s;
+}
+.stress-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+/* Vylepšenie hlavičky */
+.dashboard-header-modern {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+/* Trieda pre hlavný nadpis */
+.brand-title {
+    letter-spacing: -0.5px;
+}
+
+/* --- VYLADENÉ LOGO A PRO ODZNAK --- */
+.brand-logo {
+    height: 38px;
+    object-fit: contain;
+}
+
+/* Skrývanie a zobrazovanie lôg podľa zvolenej témy */
+[data-bs-theme="light"] .logo-dark { display: none; }
+[data-bs-theme="light"] .logo-light { display: block; }
+
+[data-bs-theme="dark"] .logo-light { display: none; }
+[data-bs-theme="dark"] .logo-dark { display: block; }
+
+/* Farba pre PRO odznak (červený gradient ladiaci s logom ryby) */
+.badge-pro {
+    background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);
+    color: white;
+    border: none;
+    letter-spacing: 0.5px;
+}
+
+/* Responzívna hlavička */
+.dashboard-header-modern {
+    display: flex;
+    flex-wrap: wrap; /* Umožní zalomenie na mobile */
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+/* Na mobile zmenšíme vnútorné odsadenie panelu */
+@media (max-width: 768px) {
+    .control-panel-pro {
+        padding: 15px;
+    }
+}
+
+/* --- STRESS MODE ANIMÁCIA --- */
+.animate-pulse {
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* --- RESPONZÍVNA TABUĽKA (CARD VIEW PRE MOBILY) --- */
+@media (max-width: 768px) {
+    #investmentsTable thead {
+        display: none; /* Skryjeme klasickú hlavičku */
+    }
+    #investmentsTable tbody tr {
+        display: block;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        padding: 0.5rem;
+        background-color: var(--bs-body-bg);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+    #investmentsTable tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid var(--bs-border-color-translucent);
+        padding: 0.75rem 0.5rem;
+        text-align: right;
+    }
+    #investmentsTable tbody td:last-child {
+        border-bottom: none;
+    }
+    /* Falošná hlavička generovaná v každom riadku pre mobil */
+    #investmentsTable tbody td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        font-size: 0.85rem;
+        color: var(--bs-secondary-color);
+        text-align: left;
+        margin-right: 15px;
+    }
+}
+
+/* --- FIREFISH BRANDING COLORS --- */
+:root {
+    --firefish-red: #bb3131; /* Základná ohnivá farba */
+}
+
+/* Trieda pre text */
+.text-firefish {
+    color: var(--firefish-red) !important;
+}
+
+/* Trieda pre hlavné tlačidlo */
+.btn-firefish {
+    background-color: var(--firefish-red);
+    border-color: var(--firefish-red);
+    color: white;
+}
+.btn-firefish:hover, .btn-firefish:focus {
+    background-color: #ff4747; /* Trochu tmavší odtieň pri prejdení myšou */
+    border-color: #ff4747;
+    color: white;
+}
+
+/* Trieda pre obrysové tlačidlo (kalkulačka) */
+.btn-outline-firefish {
+    color: var(--firefish-red);
+    border-color: var(--firefish-red);
+}
+.btn-outline-firefish:hover, .btn-outline-firefish:focus {
+    background-color: var(--firefish-red);
+    border-color: var(--firefish-red);
+    color: white;
+}
+
+/* --- UVÍTACIA OBRAZOVKA (WELCOME SCREEN) --- */
+.welcome-logo {
+    max-width: 190px;
+    height: auto;
+}
+
+.welcome-content-box {
+    max-width: 450px;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* --- JEDNOTNÝ OKRAJ PRE OVLÁDACÍ PANEL --- */
+.unified-box {
+    height: var(--action-btn-size);
+    border: 1px solid var(--bs-border-color-translucent);
+    border-radius: var(--action-btn-radius);
+    background-color: var(--bs-body-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease-in-out;
+    margin: 0;
+}
+
+/* --- POMOCNÉ TRIEDY PRE ZAROVNANIE HLAVIČKY (Nahradzujú inline štýly) --- */
+.action-panel-wrapper {
+    margin-left: auto;
+}
+
+.action-group-wrapper {
+    height: var(--action-btn-size);
+}
+
+.network-badge-text {
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+/* Jemné stmavnutie koša po prejdení myšou */
+button.unified-box:hover {
+    background-color: var(--bs-secondary-bg);
+}
+
+/* --- OPRAVY PRE TMAVÝ REŽIM (STRESS TEST A KONTRAST) --- */
+
+/* 1. Odznak MEDIUM a všetky žlté odznaky musia mať vždy čierny text */
+.badge.bg-warning {
+    color: #000 !important;
+}
+.badge.bg-warning.text-dark {
+    color: #000 !important;
+}
+
+/* 2. Zvýraznené riadky tabuľky v tmavom režime - jemné polopriesvitné podfarbenie */
+[data-bs-theme="dark"] .table-warning > td,
+[data-bs-theme="dark"] .table-warning > th {
+    background-color: rgba(255, 193, 7, 0.12) !important;
+    border-bottom-color: rgba(255, 193, 7, 0.25) !important;
+}
+
+[data-bs-theme="dark"] .table-danger > td,
+[data-bs-theme="dark"] .table-danger > th {
+    background-color: rgba(220, 53, 69, 0.15) !important;
+    border-bottom-color: rgba(220, 53, 69, 0.25) !important;
+}
+
+/* Jemné prispôsobenie čierneho riadku pri likvidácii (aby nebol úplne čierny ako pozadie) */
+[data-bs-theme="dark"] .table-dark > td,
+[data-bs-theme="dark"] .table-dark > th {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-bottom-color: rgba(220, 53, 69, 0.5) !important;
+}
+
+/* --- OPRAVA: Zvýraznené riadky v tabuľke (Dark Mode) pomocou CSS premenných --- */
+
+[data-bs-theme="dark"] .table-warning {
+    --bs-table-bg: rgba(255, 193, 7, 0.12) !important;        /* Jemná žltá v pokoji */
+    --bs-table-hover-bg: rgba(255, 193, 7, 0.20) !important;  /* Trochu silnejšia žltá pri hoveri */
+    --bs-table-color: #f8f9fa !important;                     /* Biely text v pokoji */
+    --bs-table-hover-color: #f8f9fa !important;               /* Biely text pri hoveri */
+    border-bottom-color: rgba(255, 193, 7, 0.25) !important;
+}
+
+[data-bs-theme="dark"] .table-danger {
+    --bs-table-bg: rgba(220, 53, 69, 0.15) !important;        /* Jemná červená v pokoji */
+    --bs-table-hover-bg: rgba(220, 53, 69, 0.25) !important;  /* Trochu silnejšia červená pri hoveri */
+    --bs-table-color: #f8f9fa !important;
+    --bs-table-hover-color: #f8f9fa !important;
+    border-bottom-color: rgba(220, 53, 69, 0.25) !important;
+}
+
+[data-bs-theme="dark"] .table-dark {
+    --bs-table-bg: rgba(255, 255, 255, 0.08) !important;      /* Jemná sivá v pokoji */
+    --bs-table-hover-bg: rgba(255, 255, 255, 0.15) !important;/* Trochu silnejšia sivá pri hoveri */
+    --bs-table-color: #f8f9fa !important;
+    --bs-table-hover-color: #f8f9fa !important;
+    border-bottom-color: rgba(220, 53, 69, 0.5) !important;
+}
+
+/* --- LTV TEPLOMER (Náhrada za inline štýly pre lepšiu čitateľnosť) --- */
+
+.ltv-gradient-bar {
+    height: 6px;
+    background: linear-gradient(to right, #20c997 0%, #20c997 73%, #0dcaf0 73%, #0dcaf0 79%, #ffc107 79%, #ffc107 86%, #fd7e14 86%, #fd7e14 95%, #dc3545 95%, #dc3545 100%);
+    border-radius: 3px;
+}
+
+.ltv-indicator {
+    top: -2px;
+    width: 4px;
+    height: 10px;
+    background: var(--bs-body-color);
+    border-radius: 2px;
+    left: 0%;
+    transition: left 0.5s ease;
+    transform: translateX(-50%);
+}
+
+.ltv-labels {
+    font-size: 0.6rem;
+}
+
+/* --- DONATE TLAČIDLO --- */
+.btn-donate-pulse {
+    animation: donatePulse 3s infinite;
+}
+@keyframes donatePulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.4); }
+    70% { box-shadow: 0 0 0 6px rgba(255, 193, 7, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+}
+
+/* --- PREKOPÍROVANÉ INLINE ŠTÝLY (Z HTML) --- */
+.csv-file-input { max-width: 200px; }
+.stress-slider { max-width: 400px; }
+.donate-btn-link { font-size: 0.85rem; }
+.qr-code-wrapper { max-width: 220px; }
+#simModalIcon { color: #20c997; }
