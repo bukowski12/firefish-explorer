@@ -34,7 +34,7 @@ You don't need to install anything or set up a server.
 - [Bootstrap 5.3](https://getbootstrap.com/) for responsive UI
 - [Chart.js](https://www.chartjs.org/) for beautiful data visualization
 - [PapaParse](https://www.papaparse.com/) for fast, local CSV parsing
-- Binance Public API (only used to fetch the live BTC price)
+- Coinbase Public API (only used to fetch the live BTC price)
 
 
 *Created by [@satoshi1351](https://github.com/satoshi1351)*
