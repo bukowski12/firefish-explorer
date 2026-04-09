@@ -14,7 +14,8 @@ const state = {
     rawData: [], displayData: [], currentBtcPrice: 0,
     charts: {}, sortCol: 'endDate', sortAsc: true,
     totalInvestedForTooltip: 0, myId: null, currentRoleView: 'investor',
-    currency: 'EUR', currencySymbol: '€', hasImportedData: false
+    currency: 'EUR', currencySymbol: '€', hasImportedData: false,
+    exchangeRates: null
 };
 
 Chart.register(window['chartjs-plugin-annotation']);
@@ -45,6 +46,16 @@ const parseNum = (val) => {
     const cleaned = val.toString().replace(/\s/g, '').replace(',', '.');
     const num = Number(cleaned);
     return isNaN(num) ? 0 : num;
+};
+
+const convertCurrency = (amount, fromCurr, toCurr) => {
+    if (fromCurr === toCurr || !state.exchangeRates) return amount;
+    const fromApi = (fromCurr === 'USDT' || fromCurr === 'USDC') ? 'USD' : fromCurr;
+    const toApi = (toCurr === 'USDT' || toCurr === 'USDC') ? 'USD' : toCurr;
+    const rateFrom = parseFloat(state.exchangeRates[fromApi]);
+    const rateTo = parseFloat(state.exchangeRates[toApi]);
+    if (!rateFrom || !rateTo) return amount;
+    return amount * (rateTo / rateFrom);
 };
 
 const sunIcon = document.getElementById('themeSwitchSun');
@@ -83,21 +94,29 @@ const getDom = () => ({
 async function fetchBtcPrice() {
     const priceLabel = document.getElementById('btcPriceLabel');
     try {
+        const response = await fetch(`https://api.coinbase.com/v2/exchange-rates?currency=BTC`);
+        const json = await response.json();
+        
+        state.exchangeRates = json.data.rates;
+        localStorage.setItem(`firefish_exchange_rates`, JSON.stringify(state.exchangeRates));
+
         let apiCurrency = state.currency;
         if (apiCurrency === 'USDC' || apiCurrency === 'USDT') {
             apiCurrency = 'USD';
         }
         
-        const response = await fetch(`https://api.coinbase.com/v2/prices/BTC-${apiCurrency}/spot`);
-        const json = await response.json();
-        
-        state.currentBtcPrice = parseFloat(json.data.amount);
+        state.currentBtcPrice = parseFloat(state.exchangeRates[apiCurrency]);
         localStorage.setItem(`lastBtcPrice_${state.currency}`, state.currentBtcPrice);
         
         const now = new Date();
         const timeString = now.toLocaleTimeString(currentLang === 'sk' ? 'sk-SK' : 'en-US');
         priceLabel.innerHTML = `${t('price_live')} <strong>${state.currentBtcPrice.toLocaleString('sk-SK', {maximumFractionDigits: 2})} ${state.currencySymbol}</strong> (${t('price_upd')} ${timeString})`;
     } catch (error) {
+        const savedRates = localStorage.getItem(`firefish_exchange_rates`);
+        if (savedRates) {
+            try { state.exchangeRates = JSON.parse(savedRates); } catch(e) {}
+        }
+
         const savedPrice = localStorage.getItem(`lastBtcPrice_${state.currency}`);
         state.currentBtcPrice = savedPrice ? parseFloat(savedPrice) : (state.currency === 'EUR' ? 60000 : 0);
         priceLabel.innerHTML = `${t('price_err')} <strong>${state.currentBtcPrice.toLocaleString('sk-SK', {maximumFractionDigits: 2})} ${state.currencySymbol}</strong>`;
@@ -183,7 +202,8 @@ function parseAndInitApp(csvText) {
         complete: async function(results) {
             if (results.data && results.data.length > 0) {
                 const firstRow = results.data[0];
-                if (!('Investment amount' in firstRow) || !('Amount due' in firstRow) || !('Status' in firstRow)) {
+                const hasAmount = ('Investment amount' in firstRow) || ('Loan amount' in firstRow);
+                if (!hasAmount || !('Amount due' in firstRow) || !('Status' in firstRow)) {
                     alert(t('msg_err_csv'));
                     localStorage.removeItem('firefish_saved_csv');
                     document.getElementById('csvFileInput').value = '';
@@ -203,6 +223,7 @@ function parseAndInitApp(csvText) {
             }
 
             state.myId = getMyId(results.data);
+            await fetchBtcPrice();
             state.rawData = parseRawData(results.data);
 
             const savedSims = JSON.parse(localStorage.getItem('firefish_simulated_loans') || '[]');
@@ -236,7 +257,6 @@ function parseAndInitApp(csvText) {
             document.getElementById('stressPlaceholder').classList.add('d-none');
             document.getElementById('stressPanel').classList.remove('d-none');
 
-            await fetchBtcPrice();
             recalculateBaseData();
             
             const dom = getDom();
@@ -443,14 +463,23 @@ function parseRawData(data) {
     const parsed = [];
 
     for (let row of data) {
-        const invested = parseNum(row['Investment amount']);
+        let invested = parseNum(row['Investment amount'] || row['Loan amount']);
         if (invested <= 0) continue;
 
-        const due = parseNum(row['Amount due']);
+        let due = parseNum(row['Amount due']);
         const rate = parseNum(row['Interest rate (% p.a.)']);
         const collateralBtc = parseNum(row['Collateral sum (BTC)']);
-        const liquidationPrice = parseNum(row['Liquidation price']);
+        let liquidationPrice = parseNum(row['Liquidation price']);
         const status = (row['Status'] || 'UNKNOWN').toUpperCase();
+
+        const rowCurrency = (row['Currency'] || state.currency).toUpperCase().trim();
+        if (rowCurrency !== state.currency) {
+            invested = convertCurrency(invested, rowCurrency, state.currency);
+            due = convertCurrency(due, rowCurrency, state.currency);
+            if (liquidationPrice > 0) {
+                liquidationPrice = convertCurrency(liquidationPrice, rowCurrency, state.currency);
+            }
+        }
 
         const startDate = parseSlovakDate(row['Start date (dd. mm. yyyy)']);
         const endDate = parseSlovakDate(row['Maturity date (dd. mm. yyyy)']);
@@ -495,7 +524,7 @@ function parseRawData(data) {
         }
 
         parsed.push({
-            id: row['Investment id'] || 'N/A', invested, due, rate, status, profit,
+            id: row['Investment id'] || row['Loan id'] || 'N/A', invested, due, rate, status, profit,
             isClosed, isActive, cashflowMonth, liquidationPrice, collateralBtc, annualYield, ltv, distancePct,
             investorId, borrowerId, role, 
             startDate, endDate, progressPct, remainingDays,
@@ -1064,14 +1093,21 @@ function updateStressUI(pct) {
 
 // --- ULOŽENIE SIMULÁCIE ---
 document.getElementById('btnSaveSimulation').addEventListener('click', async function() {
-    const amount = parseFloat(document.getElementById('simAmount').value);
-    const rate = parseFloat(document.getElementById('simRate').value);
-    const months = parseInt(document.getElementById('simMonths').value);
-    
+    const amountStr = document.getElementById('simAmount').value || document.getElementById('simAmount').placeholder;
+    const rateStr = document.getElementById('simRate').value || document.getElementById('simRate').placeholder;
+    const monthsStr = document.getElementById('simMonths').value || document.getElementById('simMonths').placeholder;
+
+    const amount = parseFloat(amountStr);
+    const rate = parseFloat(rateStr);
+    const months = parseInt(monthsStr);
+
+    if (isNaN(amount) || amount <= 0 || isNaN(rate) || isNaN(months) || months <= 0) {
+        alert(t('msg_fill')); 
+        return; 
+    }
+
     const simRoleEl = document.querySelector('input[name="simRole"]:checked');
     const role = simRoleEl ? simRoleEl.value : state.currentRoleView;
-
-    if (!amount || !rate || !months) { alert(t('msg_fill')); return; }
 
     if (!state.hasImportedData) {
         const selectedCurr = document.getElementById('simCurrencySelect').value;
